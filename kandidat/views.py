@@ -137,9 +137,6 @@ def kandidat_delete_all(request):
     return redirect("kandidat-home")
 
 def signin(request):
-
-    if request.user.is_authenticated:
-        return redirect("kandidat-home")
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
