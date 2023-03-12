@@ -1,5 +1,6 @@
 {% extends 'kandidat/base.html' %} {% block content %}
 
+
 <div class="w-full h-[80vh] flex items-center justify-center">
   <form method="post" class="flex flex-col gap-2 p-3 shadow-md">
     <h2 class="text-center text-2xl font-semibold text-gray-800">Anmelden</h2>
@@ -39,5 +40,6 @@
     {% csrf_token %}
   </form>
 </div>
+
 
 {% endblock %}
