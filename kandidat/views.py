@@ -60,7 +60,6 @@ def kandidaten_detail(request, pk):
         kandidat.delete()
         return JsonResponse({'message': 'candidate was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
-
 @api_view(['GET'])
 def kandidaten_list_erwachsene(request):
     # GET alle erwachsenen Kandidaten
@@ -69,7 +68,6 @@ def kandidaten_list_erwachsene(request):
         kandidat_serializer = KandidatSerializer(kandidat, many=True)
         return JsonResponse(kandidat_serializer.data, safe=False)
 def home(request):
-
     return render(request,'kandidat/layout.html')
 
 def kandidat_add(request):
@@ -79,7 +77,6 @@ def kandidat_add(request):
 def kandidat_update(request,id):
 
     kandidat = ""
-
     try:
         kandidat = Kandidat.objects.get(id=id)
     except Kandidat.DoesNotExist:
