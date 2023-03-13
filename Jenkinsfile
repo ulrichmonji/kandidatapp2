@@ -100,12 +100,12 @@ pipeline {
           agent any
           steps {
               script {
-                  if (env.BRANCH_NAME == 'Login') 
+                  if (GIT_BRANCH == 'Login') 
                       {
                       sh "echo LOGIN && docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}"
 
                       }
-                  if (env.BRANCH_NAME == 'origin/Logout') 
+                  if (GIT_BRANCH == 'origin/Login') 
                       {
                       echo 'Hello from LOGOUT branch'
                       }
