@@ -1,3 +1,5 @@
+def branche = "null"
+
 pipeline {
     environment {
         IMAGE_NAME = "kandidatapp2"
@@ -9,10 +11,12 @@ pipeline {
     }
 
     parameters {
-        booleanParam(name: "RELEASE", defaultValue: false)
-        choice(name: "DEPLOY_TO", choices: ["", "INT", "PRE", "PROD"])
+        // booleanParam(name: "RELEASE", defaultValue: false)
+        // choice(name: "DEPLOY_TO", choices: ["", "INT", "PRE", "PROD"])
+        string(name: 'HOST_IP_PARAM', defaultValue: '172.28.128.129', description: 'HOST IP')
+        string(name: 'HOST_PORT_PARAM', defaultValue: '8000', description: 'APP EXPOSED PORT')        
     }
-        
+
     agent none
     stages {
        stage('Build image') {
@@ -106,11 +110,28 @@ pipeline {
           agent any
           steps {
               script {
+                // switch(params.DEPLOY_TO) {
+                switch(${GIT_BRANCH}) {
+                    case "origin/Login": 
+                        echo "BRANCHE LOGIN";
+                        branche = login
+                        break
+                    case "origin/Logout": 
+                        echo "./deploy.sh pre"; 
+                        break
+                    case "origin/Register": 
+                        echo "./deploy.sh prod"; 
+                        break
+                    case "origin/master": 
+                        echo "./deploy.sh prod"; 
+                        break                        
+                }                
                   if (GIT_BRANCH == 'origin/Login') 
                       {
                         sh '''
                             echo "Code for branch Login" 
                             docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
+                            docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                             echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
                             docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
                         '''
