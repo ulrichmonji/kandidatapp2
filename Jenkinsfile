@@ -96,15 +96,10 @@ pipeline {
           }
       }
 
-      stage('Create release') {
+      stage('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
           steps {
               script {
-                  if (GIT_BRANCH == 'Login') 
-                      {
-                      sh "echo LOGIN && docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}"
-
-                      }
                   if (GIT_BRANCH == 'origin/Login') 
                       {
                         sh '''
@@ -113,7 +108,6 @@ pipeline {
                             echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
                             docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
                         '''
-                      /*echo 'Hello from LOGOUT branch'*/
                       }
                   if (env.BRANCH_NAME == 'origin/Register') 
                       {
@@ -124,20 +118,6 @@ pipeline {
                       }
                   }
             }
-      }
-
-      stage ('Anmeldung und Push-Image auf Docker-Hub') {
-          agent any
-          steps {
-             script {
-               sh '''
-                   echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
-                   # docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${BRANCH_NAME}-${GIT_COMMIT} 
-                   # docker push ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG
-                   docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} 
-               '''
-             }
-          }
       }
 
     }   
