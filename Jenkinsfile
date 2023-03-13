@@ -7,6 +7,12 @@ pipeline {
         HOST_IP = "${HOST_IP_PARAM}"
         HOST_PORT = "${HOST_PORT_PARAM}"
     }
+
+    parameters {
+        booleanParam(name: "RELEASE", defaultValue: false)
+        choice(name: "DEPLOY_TO", choices: ["", "INT", "PRE", "PROD"])
+    }
+        
     agent none
     stages {
        stage('Build image') {
