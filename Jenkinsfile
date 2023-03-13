@@ -96,26 +96,27 @@ pipeline {
       }
 
       stage('Create release') {
-        script {
-            if (env.BRANCH_NAME == 'origin/Login') 
-                {
-                sh "echo LOGIN && docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}"
+        steps {
+            script {
+                if (env.BRANCH_NAME == 'origin/Login') 
+                    {
+                    sh "echo LOGIN && docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT}"
 
+                    }
+                if (env.BRANCH_NAME == 'origin/Logout') 
+                    {
+                    echo 'Hello from null branch'
+                    }
+                if (env.BRANCH_NAME == 'origin/Register') 
+                    {
+                    echo 'Hello from null branch'
+                    }                
+                else {
+                    sh "echo 'Hello from ${env.BRANCH_NAME} branch!'"
+                    }
                 }
-            if (env.BRANCH_NAME == 'origin/Logout') 
-                {
-                echo 'Hello from null branch'
-                }
-            if (env.BRANCH_NAME == 'origin/Register') 
-                {
-                echo 'Hello from null branch'
-                }                
-            else {
-                sh "echo 'Hello from ${env.BRANCH_NAME} branch!'"
-                }
-            }
+          }
       }
-
 
       stage ('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
