@@ -13,7 +13,10 @@ pipeline {
            agent any
            steps {
               script {
-                sh 'docker build -t ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG .'
+                sh '''
+                  docker build -t ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG .
+                  # docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} 
+                  '''
               }
            }
        }
@@ -29,6 +32,47 @@ pipeline {
              }
           }
        }
+
+       stage('Test Login') {
+          when {
+             expression { GIT_BRANCH == 'origin/Login' }
+           }
+           agent any
+           steps {
+              script {
+                sh '''
+                    echo "CODE DE TEST du login"
+                   '''
+              }
+           }
+       }
+     
+       stage('Test Logout') {
+          when {
+             expression { GIT_BRANCH == 'origin/Logout' }
+           }
+           agent any
+           steps {
+              script {
+                sh '''
+                    echo "CODE DE TEST du logout"
+                   '''
+              }
+           }
+       }
+       stage('Test Register') {
+          when {
+             expression { GIT_BRANCH == 'origin/Register' }
+           }
+           agent any
+           steps {
+              script {
+                sh '''
+                    echo "CODE DE TEST du Register"
+                   '''
+              }
+           }
+       }            
        stage('Test image') {
            agent any
            steps {
@@ -50,6 +94,28 @@ pipeline {
              }
           }
       }
+/*
+      stage('Create release') {
+        script {
+            if (env.BRANCH_NAME == 'origin/Login') 
+                {
+                sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} ""
+
+                }
+            if (env.BRANCH_NAME == 'origin/Logout') 
+                {
+                echo 'Hello from null branch'
+                }
+            if (env.BRANCH_NAME == 'origin/Register') 
+                {
+                echo 'Hello from null branch'
+                }                
+            else {
+                sh "echo 'Hello from ${env.BRANCH_NAME} branch!'"
+                }
+            }
+      }
+*/
 
       stage ('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
@@ -57,7 +123,9 @@ pipeline {
              script {
                sh '''
                    echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
-                   docker push ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG
+                   docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} 
+                   # docker push ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG
+                   docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} 
                '''
              }
           }
