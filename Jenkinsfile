@@ -107,14 +107,14 @@ pipeline {
                       }
                   if (env.BRANCH_NAME == 'origin/Logout') 
                       {
-                      echo 'Hello from null branch'
+                      echo 'Hello from LOGOUT branch'
                       }
                   if (env.BRANCH_NAME == 'origin/Register') 
                       {
-                      echo 'Hello from null branch'
+                      echo 'Hello from REGISTER branch'
                       }                
                   else {
-                      sh "echo 'Hello from ${env.BRANCH_NAME} branch!'"
+                      sh "echo ' Default msg, Hello from ${env.BRANCH_NAME} branch!'"
                       }
                   }
             }
