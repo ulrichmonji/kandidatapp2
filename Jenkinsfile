@@ -1,7 +1,6 @@
 pipeline {
     environment {
         IMAGE_NAME = "kandidatapp2"
-        IMAGE_TAG = "R03"
         DOCKERHUB_ID = "royem001"
         DOCKERHUB_PASSWORD = credentials('dockerhub_password')
         HOST_IP = "${HOST_IP_PARAM}"
@@ -9,8 +8,6 @@ pipeline {
     }
 
     parameters {
-        // booleanParam(name: "RELEASE", defaultValue: false)
-        // choice(name: "DEPLOY_TO", choices: ["", "INT", "PRE", "PROD"])
         string(name: 'HOST_IP_PARAM', defaultValue: '172.28.128.129', description: 'HOST IP')
         string(name: 'HOST_PORT_PARAM', defaultValue: '8000', description: 'APP EXPOSED PORT')        
     }
@@ -23,8 +20,7 @@ pipeline {
               script {
                 sh '''
                   echo "BUILD"
-                  # docker build -t ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG .
-                  # docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${GIT_BRANCH}-${GIT_COMMIT} 
+                  docker build -t ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} .
                   '''
               }
            }
@@ -35,54 +31,38 @@ pipeline {
             script {
               sh '''
                   docker rm -f $IMAGE_NAME
-                  docker run --name $IMAGE_NAME -d -p $HOST_PORT:80 ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG
+                  docker run --name $IMAGE_NAME -d -p $HOST_PORT:80 ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT}
                   sleep 5
               '''
              }
           }
        }
 
-       stage('Test Login') {
-          when {
-             expression { GIT_BRANCH == 'origin/Login' }
-           }
+
+
+       stage('Test unitaires Application') {
            agent any
            steps {
               script {
-                sh '''
-                    echo "CODE DE TEST du login"
-                   '''
+                     switch(GIT_BRANCH) {
+                        case "origin/Login": 
+                             echo "CODE DE TEST du login";
+                            break
+                        case "origin/Logout":
+                            echo "CODE DE TEST du logout";
+                            break
+                        case "origin/Register":
+                            echo "CODE DE TEST du Register";
+                            break
+                        case "origin/master":
+                            echo "CODE DE TEST du master";
+                            break                        
+                    } 
               }
            }
        }
-     
-       stage('Test Logout') {
-          when {
-             expression { GIT_BRANCH == 'origin/Logout' }
-           }
-           agent any
-           steps {
-              script {
-                sh '''
-                    echo "CODE DE TEST du logout"
-                   '''
-              }
-           }
-       }
-       stage('Test Register') {
-          when {
-             expression { GIT_BRANCH == 'origin/Register' }
-           }
-           agent any
-           steps {
-              script {
-                sh '''
-                    echo "CODE DE TEST du Register"
-                   '''
-              }
-           }
-       }            
-       stage('Test image') {
+               
+       stage('Tests fonctionnels') {
            agent any
            steps {
               script {
@@ -129,13 +109,15 @@ pipeline {
                     } 
                     sh '''
                         echo "Push image on dockerhub" 
-                        docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
+                        docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                         docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                     '''                                   
-                    if (GIT_BRANCH == 'origin/master') 
+                    if (TAG_NAME  == 'release*') 
                         {
                             sh '''
-                                echo "Additionnal Instruction on master Branch" 
+                                echo "Production de la nouvelle release ${TAG_NAME} "
+                                docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME}
+                                docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME} 
 
                             '''
                         }
