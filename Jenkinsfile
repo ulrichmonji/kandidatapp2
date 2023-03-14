@@ -106,13 +106,13 @@ pipeline {
 
       stage('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
+          environment {
+               branche = "null" 
+            }
           steps {
               script {
-                    def branche="null"
                     sh '''
                         echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
-                        
-
                     '''
                     // switch(params.DEPLOY_TO) {
                     switch(GIT_BRANCH) {
@@ -136,10 +136,8 @@ pipeline {
                         {
                             sh '''
                                 echo "Code for branch Login" 
-                                docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
                                 docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
-                                # echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
-                                docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
+                                docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                             '''
                         }
                 }
