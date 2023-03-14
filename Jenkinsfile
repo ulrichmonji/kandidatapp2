@@ -108,21 +108,28 @@ pipeline {
           agent any
           steps {
               script {
-                    def branche = "null"
+                    def branche="null"
+                    sh '''
+                        echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
+                        
+
+                    '''
                     // switch(params.DEPLOY_TO) {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
                             echo "BRANCHE LOGIN";
-                            branche = "login";
+                            branche="login"
+                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:login-${GIT_COMMIT}";
                             break
                         case "origin/Logout": 
-                            echo "./deploy.sh pre"; 
+                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:logout-${GIT_COMMIT}";
+; 
                             break
                         case "origin/Register": 
-                            echo "./deploy.sh prod"; 
+                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Register-${GIT_COMMIT}"; 
                             break
                         case "origin/master": 
-                            echo "./deploy.sh prod"; 
+                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:master-${GIT_COMMIT}"; 
                             break                        
                     }                
                     if (GIT_BRANCH == 'origin/Login') 
@@ -131,16 +138,9 @@ pipeline {
                                 echo "Code for branch Login" 
                                 docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
                                 docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
-                                echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
+                                # echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
                                 docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:Login-${GIT_COMMIT}
                             '''
-                        }
-                    if (env.BRANCH_NAME == 'origin/Register') 
-                        {
-                        echo 'Hello from REGISTER branch'
-                        }                
-                    else {
-                        sh "echo ' Default msg, Hello from ${env.BRANCH_NAME} branch!'"
                         }
                 }
            }
