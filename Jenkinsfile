@@ -106,11 +106,12 @@ pipeline {
 
       stage('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
-          environment {
+          /* environment {
                branche = "null" 
-            }
+            } */
           steps {
               script {
+                env.branche="test"
                     sh '''
                         echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
                     '''
@@ -118,19 +119,19 @@ pipeline {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
                             echo "BRANCHE LOGIN";
-                            environment { branche="login" };
+                            env.branche="login";
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:login-${GIT_COMMIT}";
                             break
                         case "origin/Logout":
-                            environment { branche="logout" };
+                            env.branche="logout";
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:logout-${GIT_COMMIT}";
                             break
                         case "origin/Register":
-                            environment { branche="register" };
+                            env.branche="register";
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Register-${GIT_COMMIT}"; 
                             break
                         case "origin/master":
-                            environment { branche="master" };
+                            env.branche="master";
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:master-${GIT_COMMIT}"; 
                             break                        
                     }                
