@@ -106,41 +106,37 @@ pipeline {
 
       stage('Anmeldung und Push-Image auf Docker-Hub') {
           agent any
-          /* environment {
-               branche = "null" 
-            } */
           steps {
               script {
                 env.branche="test"
                     sh '''
                         echo $DOCKERHUB_PASSWORD | docker login -u ${DOCKERHUB_ID} --password-stdin
                     '''
-                    // switch(params.DEPLOY_TO) {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
                             echo "BRANCHE LOGIN";
                             env.branche="login";
-                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:login-${GIT_COMMIT}";
                             break
                         case "origin/Logout":
                             env.branche="logout";
-                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:logout-${GIT_COMMIT}";
                             break
                         case "origin/Register":
                             env.branche="register";
-                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Register-${GIT_COMMIT}"; 
                             break
                         case "origin/master":
                             env.branche="master";
-                            sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:master-${GIT_COMMIT}"; 
                             break                        
-                    }                
-                    if (GIT_BRANCH == 'origin/Login') 
+                    } 
+                    sh '''
+                        echo "Push image on dockerhub" 
+                        docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
+                        docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
+                    '''                                   
+                    if (GIT_BRANCH == 'origin/master') 
                         {
                             sh '''
-                                echo "Code for branch Login" 
-                                docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
-                                docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
+                                echo "Additionnal Instruction on master Branch" 
+
                             '''
                         }
                 }
