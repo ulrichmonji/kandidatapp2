@@ -118,17 +118,19 @@ pipeline {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
                             echo "BRANCHE LOGIN";
-                            branche="login"
+                            environment { branche="login" };
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:login-${GIT_COMMIT}";
                             break
-                        case "origin/Logout": 
+                        case "origin/Logout":
+                            environment { branche="logout" };
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:logout-${GIT_COMMIT}";
-; 
                             break
-                        case "origin/Register": 
+                        case "origin/Register":
+                            environment { branche="register" };
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:Register-${GIT_COMMIT}"; 
                             break
-                        case "origin/master": 
+                        case "origin/master":
+                            environment { branche="master" };
                             sh "docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:$IMAGE_TAG ${DOCKERHUB_ID}/${IMAGE_NAME}:master-${GIT_COMMIT}"; 
                             break                        
                     }                
