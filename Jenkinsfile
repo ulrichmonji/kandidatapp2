@@ -112,7 +112,7 @@ pipeline {
                         docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                         docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                     '''                                   
-                    if (TAG_NAME  == 'release*') 
+                    if (TAG_NAME  == 'v*') 
                         {
                             sh '''
                                 echo "Production de la nouvelle release ${TAG_NAME} "
