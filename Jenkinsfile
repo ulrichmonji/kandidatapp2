@@ -114,7 +114,7 @@ pipeline {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
                             echo "BRANCHE LOGIN";
-                            branche = login;
+                            branche = "login";
                             break
                         case "origin/Logout": 
                             echo "./deploy.sh pre"; 
