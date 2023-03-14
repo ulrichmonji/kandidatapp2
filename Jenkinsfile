@@ -1,5 +1,3 @@
-def branche = "null"
-
 pipeline {
     environment {
         IMAGE_NAME = "kandidatapp2"
@@ -110,6 +108,7 @@ pipeline {
           agent any
           steps {
               script {
+                    def branche = "null"
                     // switch(params.DEPLOY_TO) {
                     switch(GIT_BRANCH) {
                         case "origin/Login": 
