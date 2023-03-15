@@ -131,7 +131,7 @@ pipeline {
        stage('Create release after TAG') {
           agent any
           when {
-            tag 'v*'
+            tag 'refs/tags/v*'
           }
           steps {
              script {
