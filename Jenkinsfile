@@ -131,7 +131,7 @@ pipeline {
        stage('Create release after TAG') {
           agent any
           when {
-            buildingTag()
+            tag 'v*'
           }
           steps {
              script {
