@@ -113,18 +113,35 @@ pipeline {
                         docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${branche}-${GIT_COMMIT}
                         echo $GIT_TAG_NAME
                     '''                                   
-                    if (GIT_TAG_NAME  == 'v*') 
+/*                    if (GIT_TAG_NAME  == 'v*') 
                         {
                             sh '''
-                                echo "Production de la nouvelle release ${TAG_NAME} "
+                                echo "Production de la nouvelle release ${TAG_NAME}"
                                 docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME}
                                 docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME} 
 
                             '''
-                        }
+                        } */
                 }
+
+
            }
        }
 
+       stage('Create release after TAG') {
+          agent any
+          when {
+            buildingTag()
+          }
+          steps {
+             script {
+               sh '''
+                   echo "Production de la nouvelle release ${TAG_NAME}"
+                   docker tag ${DOCKERHUB_ID}/$IMAGE_NAME:${GIT_COMMIT} ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME}
+                   docker push ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_NAME}
+               '''
+             }
+          }
+      }
     }   
 }
