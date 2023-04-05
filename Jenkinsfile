@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'HOST_IP_PARAM', defaultValue: '172.28.128.129', description: 'HOST IP')
+        string(name: 'HOST_IP_PARAM', defaultValue: '172.28.128.137', description: 'HOST IP')
         string(name: 'HOST_PORT_PARAM', defaultValue: '8000', description: 'APP EXPOSED PORT')        
     }
 
