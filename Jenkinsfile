@@ -1,7 +1,7 @@
 pipeline {
     environment {
         IMAGE_NAME = "kandidatapp2"
-        DOCKERHUB_ID = "royem001"
+        DOCKERHUB_ID = "choco1992"
         DOCKERHUB_PASSWORD = credentials('dockerhub_password')
         HOST_IP = "${HOST_IP_PARAM}"
         HOST_PORT = "${HOST_PORT_PARAM}"
