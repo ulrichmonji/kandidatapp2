@@ -13,6 +13,8 @@ pipeline {
     }
 
     agent none
+
+    
     stages {
        stage('Build image') {
            agent any
@@ -61,6 +63,8 @@ pipeline {
               }
            }
        }
+
+
                
        stage('Tests fonctionnels') {
            agent any
